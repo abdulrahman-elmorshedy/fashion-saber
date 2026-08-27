@@ -1,0 +1,21 @@
+<?php
+return [
+    'frontend'          => 'الواجهة الأمامية',
+    'last_30_days'      => 'آخر 30 يومًا',
+    'new_customers'     => 'عملاء جدد',
+    'order_quantity'    => 'عدد الطلبات',
+    'order_status_dist' => 'توزيع حالات الطلب',
+    'page_views'        => 'مشاهدات الصفحة (PV)',
+    'profile'           => 'الملف الشخصي',
+    'revenue_orders'    => 'الإيرادات والطلبات',
+    'sign_out'          => 'تسجيل الخروج',
+    'today_orders'      => 'أوامر اليوم',
+    'today_revenue'     => 'إيرادات اليوم',
+    'today_visits'      => 'زيارات اليوم',
+    'top_customers'     => 'أفضل العملاء',
+    'top_products'      => 'المنتجات الأكثر مبيعًا',
+    'traffic_trends'    => 'اتجاهات الزيارات',
+    'unique_visitors'   => 'زوار فريدون (UV)',
+    'order_trends'      => 'اتجاهات الطلبات',
+    'vs_yesterday'      => 'مقارنة بالأمس',
+];

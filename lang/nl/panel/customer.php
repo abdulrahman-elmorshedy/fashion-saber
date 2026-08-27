@@ -1,0 +1,21 @@
+<?php
+return [
+    'address'        => 'Adresbeheer',
+    'address_id'     => 'Adres ID',
+    'address_manage' => 'Adresbeheer',
+    'avatar'         => 'Avatar',
+    'basic_info'     => 'Basisinformatie',
+    'code'           => 'Verificatiecode',
+    'discount_rate'  => 'Kortingspercentage',
+    'email'          => 'E-mail',
+    'from'           => 'Bron',
+    'group'          => 'Klantgroep',
+    'level'          => 'Niveau',
+    'locale'         => 'Taalinstellingen',
+    'login_frontend' => 'Inloggen voorzijde',
+    'mini_cost'      => 'Minimale besteding',
+    'name'           => 'Naam',
+    'password'       => 'Wachtwoord',
+    'balance_manage' => 'Balansbeheer',
+    'customer_info'  => 'Klantinformatie',
+];

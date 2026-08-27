@@ -1,0 +1,53 @@
+<?php
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+
+class DatabaseSeeder extends Seeder
+{
+    /**
+     * Seed the application's database.
+     */
+    public function run(): void
+    {
+        $this->call([
+            SettingSeeder::class,
+            LocaleSeeder::class,
+            CurrencySeeder::class,
+            WeightClassSeeder::class,
+
+            AdminSeeder::class,
+            ArticleSeeder::class,
+            AttributeSeeder::class,
+            BrandSeeder::class,
+            CatalogSeeder::class,
+            CategorySeeder::class,
+            CountrySeeder::class,
+            CustomerGroupSeeder::class,
+            PageSeeder::class,
+            OptionSeeder::class,
+            ProductSeeder::class,
+            StateSeeder::class,
+            TagSeeder::class,
+            RegionSeeder::class,
+            TaxSeeder::class,
+            PluginSeeder::class,
+        ]);
+
+        touch(storage_path('installed'));
+    }
+
+    /**
+     * Safely truncate a table by disabling foreign key checks.
+     *
+     * @param  string  $modelClass
+     * @return void
+     */
+    protected function safeTruncate(string $modelClass): void
+    {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0');
+        $modelClass::query()->truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1');
+    }
+}

@@ -1,0 +1,21 @@
+<?php
+return [
+    'email_enable'             => 'مكّن خدمة البريد',
+    'email_engine'             => 'محرك البريد',
+    'email_notifications'      => 'إشعار البريد',
+    'email_notifications_desc' => 'ضبط النظام إلى إرسال إشعار بالبريد',
+    'email_setting'            => 'إعدادات البريد',
+    'email_settings'           => 'إعدادات البريد',
+    'email_settings_desc'      => 'ضبط إعدادات ذات صلة لإرسال البريد',
+    'log_description'          => 'سيتم تسجيل البريد في النظام في شكل سجل ولن يتم إرساله فعليا',
+    'new_order'                => 'تم إنشاء النظام',
+    'order_status_update'      => 'تغيير حالة الطلب',
+    'password_reset'           => 'إسترجع الشفرة',
+    'registration'             => 'تسجيل مستخدم جديد',
+    'smtp_encryption'          => 'التشفير (Encryption)',
+    'smtp_host'                => 'خادم البريد (Host)',
+    'smtp_password'            => 'كلمة المرور',
+    'smtp_port'                => 'المنفذ (Port)',
+    'smtp_timeout'             => 'المهلة (ثواني)',
+    'smtp_username'            => 'اسم المستخدم',
+];

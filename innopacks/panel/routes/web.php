@@ -1,0 +1,169 @@
+<?php
+use Illuminate\Support\Facades\Route;
+use InnoShop\Panel\Controllers;
+use InnoShop\RestAPI\PanelApiControllers\FileManagerController;
+
+Route::get('login', [Controllers\LoginController::class, 'index'])->name('login.index');
+Route::post('login', [Controllers\LoginController::class, 'store'])->name('login.store');
+
+Route::get('cli-login', [Controllers\CliLoginController::class, 'index'])->name('cli_login.index');
+Route::post('cli-login', [Controllers\CliLoginController::class, 'store'])->name('cli_login.store');
+
+Route::middleware(['admin_auth:admin'])
+    ->group(function () {
+        Route::get('logout', [Controllers\LogoutController::class, 'index'])->name('logout.index');
+
+        Route::get('/', [Controllers\DashboardController::class, 'index'])->name('dashboard.index');
+
+        Route::get('/search/menus', [Controllers\SearchController::class, 'menus'])->name('search.menus');
+
+        Route::get('/locale/{code}', [Controllers\LocaleController::class, 'switch'])->name('locale.switch');
+
+        Route::post('/upload/images', [Controllers\UploadController::class, 'images'])->name('upload.images');
+        Route::post('/upload/files', [Controllers\UploadController::class, 'files'])->name('upload.files');
+
+        Route::post('/translations/translate-text', [Controllers\TranslationController::class, 'translateText'])->name('translations.trans_text');
+        Route::post('/translations/translate-html', [Controllers\TranslationController::class, 'translateHtml'])->name('translations.trans_html');
+
+        Route::get('/orders/export', [Controllers\OrderController::class, 'exportBatch'])->name('orders.export.batch');
+        Route::delete('/orders/destroy-all', [Controllers\OrderController::class, 'destroyAll'])->name('orders.destroy_all');
+        Route::delete('/orders/bulk-destroy', [Controllers\OrderController::class, 'bulkDestroy'])->name('orders.bulk_destroy');
+        Route::resource('/orders', Controllers\OrderController::class);
+        Route::get('/orders/{order}/printing', [Controllers\OrderController::class, 'printing'])->name('orders.printing');
+        Route::put('/orders/{order}/status', [Controllers\OrderController::class, 'changeStatus'])->name('orders.change_status');
+
+        Route::resource('/order_returns', Controllers\OrderReturnController::class);
+        Route::put('/order_returns/{order_return}/status', [Controllers\OrderReturnController::class, 'changeStatus'])->name('order_returns.change_status');
+
+        Route::put('/products/{product}/active', [Controllers\ProductController::class, 'active'])->name('products.active');
+        Route::get('/products/{product}/copy', [Controllers\ProductController::class, 'copy'])->name('products.copy');
+        Route::post('/products/bulk/update', [Controllers\ProductController::class, 'bulkUpdate'])->name('products.bulk.update');
+        Route::delete('/products/destroy-all', [Controllers\ProductController::class, 'destroyAll'])->name('products.destroy_all');
+        Route::delete('/products/bulk/destroy', [Controllers\ProductController::class, 'bulkDestroy'])->name('products.destroy.batch');
+        Route::get('/products/selector', [Controllers\ProductSelectorController::class, 'selectorPage'])->name('products.selector');
+        Route::resource('/products', Controllers\ProductController::class);
+
+        Route::put('/payments/{payment}/active', [Controllers\PaymentController::class, 'active'])->name('payments.active');
+
+        Route::resource('/categories', Controllers\CategoryController::class);
+        Route::put('/categories/{category}/active', [Controllers\CategoryController::class, 'active'])->name('categories.active');
+
+        Route::resource('/attribute_groups', Controllers\AttributeGroupController::class);
+
+        Route::resource('/attributes', Controllers\AttributeController::class);
+
+        Route::resource('/attribute_values', Controllers\AttributeValueController::class);
+
+        Route::get('/options/available', [Controllers\OptionController::class, 'available'])->name('options.available');
+        Route::get('/options/{optionId}/values', [Controllers\OptionController::class, 'valuesByOptionId'])->name('options.values');
+        Route::resource('/options', Controllers\OptionController::class);
+        Route::put('/options/{option}/active', [Controllers\OptionController::class, 'active'])->name('options.active');
+
+        Route::resource('/option_values', Controllers\OptionValueController::class);
+        Route::put('/option_values/{option_value}/active', [Controllers\OptionValueController::class, 'active'])->name('option_values.active');
+
+        Route::resource('/brands', Controllers\BrandController::class);
+        Route::put('/brands/{currency}/active', [Controllers\BrandController::class, 'active'])->name('brands.active');
+
+        Route::resource('/reviews', Controllers\ReviewController::class);
+        Route::put('/reviews/{review}/active', [Controllers\ReviewController::class, 'active'])->name('reviews.active');
+
+        Route::resource('/articles', Controllers\ArticleController::class);
+        Route::put('/articles/{currency}/active', [Controllers\ArticleController::class, 'active'])->name('articles.active');
+
+        Route::resource('/catalogs', Controllers\CatalogController::class);
+        Route::put('/catalogs/{catalog}/active', [Controllers\CatalogController::class, 'active'])->name('catalogs.active');
+
+        Route::resource('/tags', Controllers\TagController::class);
+        Route::put('/tags/{tag}/active', [Controllers\TagController::class, 'active'])->name('tags.active');
+
+        Route::resource('/announcements', Controllers\AnnouncementController::class);
+        Route::put('/announcements/{announcement}/active', [Controllers\AnnouncementController::class, 'active'])->name('announcements.active');
+
+        Route::resource('/pages', Controllers\PageController::class);
+        Route::put('/pages/{page}/active', [Controllers\PageController::class, 'active'])->name('pages.active');
+
+        Route::resource('/customers', Controllers\CustomerController::class);
+        Route::get('/customers/{customer}/login', [Controllers\CustomerController::class, 'loginFrontend'])->name('customers.login');
+        Route::put('/customers/{customer}/active', [Controllers\CustomerController::class, 'active'])->name('customers.active');
+
+        Route::get('/transactions', [Controllers\TransactionController::class, 'index'])->name('transactions.index');
+        Route::get('/transactions/create', [Controllers\TransactionController::class, 'create'])->name('transactions.create');
+        Route::post('/transactions', [Controllers\TransactionController::class, 'store'])->name('transactions.store');
+        Route::get('/transactions/{transaction}', [Controllers\TransactionController::class, 'show'])->name('transactions.show');
+
+        Route::get('/withdrawals', [Controllers\CustomerWithdrawalController::class, 'index'])->name('withdrawals.index');
+        Route::get('/withdrawals/{withdrawal}', [Controllers\CustomerWithdrawalController::class, 'show'])->name('withdrawals.show');
+        Route::put('/withdrawals/{withdrawal}/status', [Controllers\CustomerWithdrawalController::class, 'changeStatus'])->name('withdrawals.change_status');
+
+        Route::resource('/customer_groups', Controllers\CustomerGroupController::class);
+        Route::get('/social', [Controllers\SocialController::class, 'index'])->name('socials.index');
+        Route::post('/social', [Controllers\SocialController::class, 'store'])->name('socials.store');
+
+        Route::get('/analytics', [Controllers\AnalyticsController::class, 'index'])->name('analytics.index');
+        Route::get('/analytics/order', [Controllers\AnalyticsController::class, 'order'])->name('analytics_order');
+        Route::get('/analytics/product', [Controllers\AnalyticsController::class, 'product'])->name('analytics_product');
+        Route::get('/analytics/customer', [Controllers\AnalyticsController::class, 'customer'])->name('analytics_customer');
+        Route::get('/analytics/visit', [Controllers\AnalyticsController::class, 'visit'])->name('analytics_visit');
+
+        Route::resource('/visits', Controllers\VisitController::class)->only(['index', 'show']);
+
+        Route::get('/locales', [Controllers\LocaleController::class, 'index'])->name('locales.index');
+        Route::post('/locales/install', [Controllers\LocaleController::class, 'install'])->name('locales.install');
+        Route::get('/locales/{locale}/edit', [Controllers\LocaleController::class, 'edit'])->name('locales.edit');
+        Route::put('/locales/{locale}', [Controllers\LocaleController::class, 'update'])->name('locales.update');
+        Route::post('/locales/{code}/uninstall', [Controllers\LocaleController::class, 'uninstall'])->name('locales.uninstall');
+        Route::put('/locales/{country}/active', [Controllers\LocaleController::class, 'active'])->name('locales.active');
+
+        Route::get('/themes', [Controllers\ThemeController::class, 'index'])->name('themes.index');
+        Route::put('/themes/{code}/active', [Controllers\ThemeController::class, 'enable'])->name('themes.active');
+        Route::get('/themes/settings', [Controllers\ThemeController::class, 'settings'])->name('themes_settings.index');
+        Route::put('/themes/settings', [Controllers\ThemeController::class, 'updateSettings'])->name('themes_settings.update');
+        Route::post('/themes/{code}/import-demo', [Controllers\ThemeController::class, 'importDemo'])->name('themes.import_demo');
+
+        Route::get('/account', [Controllers\AccountController::class, 'index'])->name('account.index');
+        Route::put('/account', [Controllers\AccountController::class, 'update'])->name('account.update');
+
+        Route::get('/settings', [Controllers\SettingController::class, 'index'])->name('settings.index');
+        Route::put('/settings', [Controllers\SettingController::class, 'update'])->name('settings.update');
+        Route::post('/settings/test-sms', [Controllers\SettingController::class, 'testSms'])->name('settings.test_sms');
+        Route::post('/settings/download-geolite2', [Controllers\SettingController::class, 'downloadGeoLite2'])->name('settings.download_geolite2');
+        Route::get('/settings/geolite2-info', [Controllers\SettingController::class, 'getGeoLite2Info'])->name('settings.geolite2_info');
+
+        Route::get('/plugin_coordination', [Controllers\PluginCoordinationController::class, 'index'])->name('plugin_coordination.index');
+        Route::put('/plugin_coordination', [Controllers\PluginCoordinationController::class, 'update'])->name('plugin_coordination.update');
+
+        Route::post('/content_ai/generate', [Controllers\ContentAIController::class, 'generate'])->name('content_ai.generate');
+
+        Route::resource('/admins', Controllers\AdminController::class);
+        Route::put('/admins/{currency}/active', [Controllers\AdminController::class, 'active'])->name('admins.active');
+
+        Route::resource('/roles', Controllers\RoleController::class);
+
+        Route::resource('/currencies', Controllers\CurrencyController::class);
+        Route::put('/currencies/{currency}/active', [Controllers\CurrencyController::class, 'active'])->name('currencies.active');
+
+        Route::resource('/countries', Controllers\CountryController::class);
+        Route::put('/countries/{country}/active', [Controllers\CountryController::class, 'active'])->name('countries.active');
+
+        Route::resource('/states', Controllers\StateController::class);
+        Route::put('/states/{state}/active', [Controllers\StateController::class, 'active'])->name('states.active');
+
+        Route::resource('/regions', Controllers\RegionController::class);
+        Route::put('/regions/{state}/active', [Controllers\RegionController::class, 'active'])->name('regions.active');
+
+        Route::resource('/tax_classes', Controllers\TaxClassController::class);
+        Route::resource('/tax_rates', Controllers\TaxRateController::class);
+
+        Route::resource('/weight_classes', Controllers\WeightClassController::class);
+        Route::put('/weight_classes/{id}/active', [Controllers\WeightClassController::class, 'active'])->name('weight_classes.active');
+
+        Route::get('/newsletter-subscribers', [Controllers\NewsletterSubscriberController::class, 'index'])->name('newsletter_subscribers.index');
+        Route::get('/newsletter-subscribers/{newsletter_subscriber}', [Controllers\NewsletterSubscriberController::class, 'show'])->name('newsletter_subscribers.show');
+        Route::delete('/newsletter-subscribers/{newsletter_subscriber}', [Controllers\NewsletterSubscriberController::class, 'destroy'])->name('newsletter_subscribers.destroy');
+        Route::put('/newsletter-subscribers/{newsletter_subscriber}/unsubscribe', [Controllers\NewsletterSubscriberController::class, 'unsubscribe'])->name('newsletter_subscribers.unsubscribe');
+        Route::put('/newsletter-subscribers/{newsletter_subscriber}/resubscribe', [Controllers\NewsletterSubscriberController::class, 'resubscribe'])->name('newsletter_subscribers.resubscribe');
+
+        Route::get('/file_manager', [FileManagerController::class, 'index'])->name('file_manager.index');
+        Route::get('/file_manager/iframe', [FileManagerController::class, 'iframe'])->name('file_manager.iframe');
+    });

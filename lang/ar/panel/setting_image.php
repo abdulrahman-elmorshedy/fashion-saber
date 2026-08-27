@@ -1,0 +1,20 @@
+<?php
+return [
+    'image_pad_color'                     => 'لون تعبئة الصورة',
+    'image_pad_color_desc'                => 'لون الخلفية عند استخدام نمط التعبئة (تنسيق Hex، مثل #FFFFFF للأبيض)',
+    'image_resize_mode'                   => 'نمط تغيير الحجم',
+    'image_resize_mode_contain'           => 'احتواء (Contain)',
+    'image_resize_mode_contain_desc'      => 'الحفاظ على نسبة العرض إلى الارتفاع ليتناسب مع الحجم المستهدف بالكامل، مع ترك فراغات',
+    'image_resize_mode_cover'             => 'تغطية (Cover)',
+    'image_resize_mode_cover_desc'        => 'الحفاظ على نسبة العرض إلى الارتفاع، وتقليص الحجم لملء الهدف بالكامل، قد يتم قص أجزاء من الصورة',
+    'image_resize_mode_height_cover'      => 'تغطية الارتفاع (Height Cover)',
+    'image_resize_mode_height_cover_desc' => 'التمدد ليتناسب مع الارتفاع المستهدف، مع الحفاظ على نسبة العرض إلى الارتفاع',
+    'image_resize_mode_pad'               => 'تعبئة (Pad)',
+    'image_resize_mode_pad_desc'          => 'الحفاظ على نسبة العرض إلى الارتفاع، مع ملء المساحة المتبقية بلون الخلفية - مناسب جداً لصور المنتجات',
+    'image_resize_mode_resize'            => 'تغيير الحجم المباشر (Resize)',
+    'image_resize_mode_resize_desc'       => 'تغيير الحجم ليتناسب مع الهدف مباشرة دون الحفاظ على النسبة، قد يحدث تشوه',
+    'image_resize_mode_width_cover'       => 'تغطية العرض (Width Cover)',
+    'image_resize_mode_width_cover_desc'  => 'التمدد ليتناسب مع العرض المستهدف، مع الحفاظ على نسبة العرض إلى الارتفاع',
+    'image_settings'                      => 'إعدادات الصور',
+    'image_settings_desc'                 => 'ضبط أنماط تغيير حجم الصور وإعدادات الصور الأخرى',
+];

@@ -1,0 +1,72 @@
+.sidebar-box {
+  background-color: #121212 !important;
+  color: #ffffff;
+}
+
+.sidebar {
+  .accordion-button {
+    border: none;
+    background: transparent !important;
+    padding: 0.75rem 1rem;
+    color: rgba(255, 255, 255, 0.8) !important;
+    text-align: start;
+
+    &::after {
+      filter: invert(1);
+    }
+
+    &:not(.collapsed) {
+      background: rgba(212, 175, 55, 0.1) !important;
+      color: #D4AF37 !important;
+    }
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.05) !important;
+      color: #D4AF37 !important;
+    }
+  }
+
+  .accordion-item {
+    border: none;
+    background: transparent;
+  }
+
+  .nav-link {
+    padding: 0.5rem 1rem 0.5rem 3rem;
+    color: rgba(255, 255, 255, 0.7) !important;
+
+    &:hover {
+      color: #D4AF37 !important;
+      background-color: rgba(212, 175, 55, 0.1) !important;
+    }
+
+    &.active {
+      color: #D4AF37 !important;
+      background-color: rgba(212, 175, 55, 0.15) !important;
+      font-weight: 600;
+    }
+  }
+
+  .icon {
+    display: inline-block;
+    width: 1.5rem;
+    color: #D4AF37 !important;
+  }
+
+  .sidebar-divider {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin: 10px 0;
+    padding: 10px 16px 0;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+}
+
+// Adjusting for RTL
+[dir="rtl"] .sidebar {
+  .nav-link {
+    padding: 0.5rem 3rem 0.5rem 1rem;
+  }
+}

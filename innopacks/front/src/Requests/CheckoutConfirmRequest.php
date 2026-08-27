@@ -1,0 +1,70 @@
+<?php
+namespace InnoShop\Front\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+use InnoShop\Common\Services\CheckoutService;
+use Throwable;
+
+class CheckoutConfirmRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     * @throws Throwable
+     */
+    public function rules(): array
+    {
+        $rules = [
+            'billing_method_code' => 'required|string',
+        ];
+
+        $isVirtual = CheckoutService::getInstance()->checkIsVirtual();
+        if (! $isVirtual) {
+            $rules['shipping_address_id']  = 'required|integer';
+            $rules['billing_address_id']   = 'required|integer';
+            
+            $shippingEnabled = system_setting('checkout_shipping_enabled', 1);
+            $rules['shipping_method_code'] = ($shippingEnabled == 1) ? 'required|string' : 'nullable|string';
+        }
+
+        return $rules;
+    }
+
+    /**
+     * Extra fields for Scribe / OpenAPI (descriptions & examples).
+     *
+     * @return array<string, array{description?: string, example?: mixed}>
+     */
+    public function bodyParameters(): array
+    {
+        return [
+            'billing_method_code' => [
+                'description' => 'Selected billing/payment method code from checkout.',
+                'example'     => 'stripe',
+            ],
+            'shipping_address_id' => [
+                'description' => 'Customer address ID for shipping (required for non-virtual carts).',
+                'example'     => 1,
+            ],
+            'billing_address_id' => [
+                'description' => 'Customer address ID for billing (required for non-virtual carts).',
+                'example'     => 1,
+            ],
+            'shipping_method_code' => [
+                'description' => 'Selected shipping method code (required for non-virtual carts).',
+                'example'     => 'flat_rate',
+            ],
+        ];
+    }
+}

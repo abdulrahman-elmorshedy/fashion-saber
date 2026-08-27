@@ -1,0 +1,15 @@
+<?php
+return [
+    'categories'     => 'ចំណាត់ថ្នាក់',
+    'category'       => 'Product Category',
+    'content'        => 'Detailed description',
+    'default'        => 'Default',
+    'high'           => 'High',
+    'low'            => 'Low',
+    'name'           => 'Name',
+    'price'          => 'Price',
+    'products_count' => 'Piece of goods',
+    'sales'          => 'Sales Volume',
+    'subcategories'  => 'subclassification',
+    'summary'        => 'Classification Introduction',
+];
