@@ -840,6 +840,67 @@ class ProductRepo extends BaseRepo
     }
 
     /**
+     * Paginate products for home page tabs ('bestseller' or 'new_arrival')
+     * with an optional overall maximum limit (e.g. from admin home_product_limit).
+     *
+     * @param  string  $tab
+     * @param  int  $perPage
+     * @param  int  $page
+     * @param  int|null  $maxLimit
+     * @return array{items: Collection, current_page: int, has_more: bool}
+     * @throws Exception
+     */
+    public function paginateHomeTabProducts(
+        string $tab = 'bestseller',
+        int $perPage = 12,
+        int $page = 1,
+        ?int $maxLimit = null
+    ): array {
+        $perPage = max(1, $perPage);
+        $page    = max(1, $page);
+        $offset  = ($page - 1) * $perPage;
+
+        if ($maxLimit !== null) {
+            $maxLimit = max(1, $maxLimit);
+            if ($offset >= $maxLimit) {
+                return [
+                    'items'        => collect(),
+                    'current_page' => $page,
+                    'has_more'     => false,
+                ];
+            }
+            $remaining             = $maxLimit - $offset;
+            $take                  = min($perPage, $remaining);
+            $canHaveMoreAfterThis = $remaining > $take;
+        } else {
+            $take                  = $perPage;
+            $canHaveMoreAfterThis = true;
+        }
+
+        $query = $this->withActive()->builder()
+            ->whereHas('translation');
+
+        if ($tab === 'new_arrival') {
+            $query->orderByDesc('products.updated_at')
+                ->orderByDesc('products.id');
+        } else {
+            $query->withCount('orderItems')
+                ->orderByDesc('order_items_count')
+                ->orderByDesc('products.id');
+        }
+
+        $fetchLimit = $canHaveMoreAfterThis ? $take + 1 : $take;
+        $rows       = $query->skip($offset)->take($fetchLimit)->get();
+        $hasMore    = $canHaveMoreAfterThis && ($rows->count() > $take);
+
+        return [
+            'items'        => $rows->take($take),
+            'current_page' => $page,
+            'has_more'     => $hasMore,
+        ];
+    }
+
+    /**
      * Get product list by IDs.
      *
      * @param  mixed  $productIDs

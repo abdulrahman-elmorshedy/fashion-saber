@@ -143,26 +143,32 @@
             <div class="module-sub-title">{{ system_setting_locale('home_feature_product_subtitle', __('front/home.feature_product_text')) }}</div>
           </div>
 
-          <ul class="nav nav-tabs">
+          <ul class="nav nav-tabs" id="home-product-tabs" role="tablist">
             @foreach ($tab_products as $item)
               <li class="nav-item" role="presentation">
                 <button class="nav-link {{ $loop->first ? 'active' : '' }}" data-bs-toggle="tab"
                   data-bs-target="#module-product-tab-x-{{ $loop->iteration }}"
-                  type="button">{{ $item['tab_title'] }}</button>
+                  type="button" role="tab">{{ $item['tab_title'] }}</button>
               </li>
             @endforeach
           </ul>
 
-          <div class="tab-content">
+          <div class="tab-content" id="home-product-tabs-content">
             @foreach ($tab_products as $item)
-              <div class="tab-pane fade show {{ $loop->first ? 'active' : '' }}"
-                id="module-product-tab-x-{{ $loop->iteration }}">
-                <div class="row gx-3 gx-lg-4">
-                  @foreach ($item['products'] as $product)
-                    <div class="col-6 col-md-4 col-lg-3">
-                      @include('shared.product')
-                    </div>
-                  @endforeach
+              <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}"
+                id="module-product-tab-x-{{ $loop->iteration }}"
+                role="tabpanel"
+                data-tab="{{ $item['key'] }}"
+                data-page="{{ $item['current_page'] }}"
+                data-has-more="{{ $item['has_more'] ? '1' : '0' }}"
+                data-loading="0">
+                <div class="row gx-3 gx-lg-4 home-tab-products-grid">
+                  @include('home._tab_products', ['products' => $item['products']])
+                </div>
+                <div class="home-tab-scroll-sentinel text-center py-3">
+                  <div class="spinner-border spinner-border-sm text-secondary d-none home-tab-loader" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
                 </div>
               </div>
             @endforeach
@@ -257,3 +263,128 @@
   @hookinsert('home.content.bottom')
 
 @endsection
+
+@push('footer')
+  <script>
+    (function () {
+      const endpoint = @json(front_route('home.products'));
+      const panes = document.querySelectorAll('#home-product-tabs-content .tab-pane');
+      if (!panes.length) return;
+
+      function bindProductCardEvents(container) {
+        if (!window.jQuery || !window.inno) return;
+        const $container = window.jQuery(container);
+
+        $container.find('.add-wishlist').on('click', function () {
+          const id = $(this).attr('data-id');
+          const isWishlist = $(this).attr('data-in-wishlist') * 1;
+          window.inno.addWishlist(id, isWishlist, this);
+        });
+
+        $container.find('.btn-add-cart').on('click', function () {
+          const skuId = $(this).data('sku-id');
+          window.inno.addCart({ skuId }, this);
+        });
+
+        if (window.bootstrap && window.bootstrap.Tooltip) {
+          container.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function (el) {
+            new window.bootstrap.Tooltip(el);
+          });
+        }
+      }
+
+      async function loadMoreProducts(pane) {
+        if (!pane || !pane.classList.contains('active')) return;
+        if (pane.dataset.hasMore !== '1' || pane.dataset.loading === '1') return;
+
+        const tab = pane.dataset.tab;
+        const nextPage = (parseInt(pane.dataset.page || '1', 10) || 1) + 1;
+        const grid = pane.querySelector('.home-tab-products-grid');
+        const loader = pane.querySelector('.home-tab-loader');
+
+        pane.dataset.loading = '1';
+        if (loader) loader.classList.remove('d-none');
+
+        try {
+          const url = `${endpoint}?tab=${encodeURIComponent(tab)}&page=${nextPage}`;
+          const response = await fetch(url, {
+            headers: {
+              'X-Requested-With': 'XMLHttpRequest',
+              'Accept': 'application/json',
+            },
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+          }
+
+          const data = await response.json();
+
+          if (data.html && grid) {
+            const temp = document.createElement('div');
+            temp.innerHTML = data.html;
+            const newNodes = Array.from(temp.children);
+            newNodes.forEach(function (node) {
+              grid.appendChild(node);
+              bindProductCardEvents(node);
+            });
+          }
+
+          pane.dataset.page = String(data.current_page || nextPage);
+          pane.dataset.hasMore = data.has_more ? '1' : '0';
+
+          if (!data.has_more && observer) {
+            const sentinel = pane.querySelector('.home-tab-scroll-sentinel');
+            if (sentinel) observer.unobserve(sentinel);
+          }
+        } catch (err) {
+          console.error('Failed to load more products:', err);
+        } finally {
+          pane.dataset.loading = '0';
+          if (loader) loader.classList.add('d-none');
+        }
+      }
+
+      function isSentinelNearViewport(sentinel) {
+        if (!sentinel) return false;
+        const rect = sentinel.getBoundingClientRect();
+        return rect.top <= (window.innerHeight || document.documentElement.clientHeight) + 300;
+      }
+
+      let observer = null;
+      if ('IntersectionObserver' in window) {
+        observer = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              const pane = entry.target.closest('.tab-pane');
+              loadMoreProducts(pane);
+            }
+          });
+        }, {
+          rootMargin: '0px 0px 300px 0px',
+          threshold: 0.01,
+        });
+
+        panes.forEach(function (pane) {
+          if (pane.dataset.hasMore === '1') {
+            const sentinel = pane.querySelector('.home-tab-scroll-sentinel');
+            if (sentinel) observer.observe(sentinel);
+          }
+        });
+      }
+
+      document.querySelectorAll('#home-product-tabs button[data-bs-toggle="tab"]').forEach(function (tabBtn) {
+        tabBtn.addEventListener('shown.bs.tab', function (event) {
+          const targetSelector = event.target.getAttribute('data-bs-target');
+          const pane = targetSelector ? document.querySelector(targetSelector) : null;
+          if (!pane) return;
+
+          const sentinel = pane.querySelector('.home-tab-scroll-sentinel');
+          if (pane.dataset.hasMore === '1' && isSentinelNearViewport(sentinel)) {
+            loadMoreProducts(pane);
+          }
+        });
+      });
+    })();
+  </script>
+@endpush

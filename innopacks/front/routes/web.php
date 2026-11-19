@@ -4,6 +4,7 @@ use InnoShop\Front\Controllers;
 use InnoShop\Front\Controllers\Account;
 
 Route::get('/', [Controllers\HomeController::class, 'index'])->name('home.index');
+Route::get('/home/products', [Controllers\HomeController::class, 'tabProducts'])->name('home.products');
 Route::get('/maintenance', [Controllers\MaintenanceController::class, 'index'])->name('maintenance.index');
 
 Route::get('/locales/switch/{code}', [Controllers\LocaleController::class, 'switch'])->name('locales.switch');
